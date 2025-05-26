@@ -1,0 +1,34 @@
+# Git
+.git
+.gitignore
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Binary files
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+daysleft
+
+# Build directory
+bin/
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Go workspace file
+go.work
+go.work.sum
+
+# Misc
+README.md
+LICENSE

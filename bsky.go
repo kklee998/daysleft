@@ -2,8 +2,9 @@ package main
 
 import (
 	"context"
-	"log"
+	"errors"
 	"net/http"
+	"time"
 
 	"github.com/bluesky-social/indigo/api/atproto"
 	"github.com/bluesky-social/indigo/api/bsky"
@@ -12,8 +13,10 @@ import (
 	"github.com/bluesky-social/indigo/xrpc"
 )
 
-func PostToBluesky(text string, username, password string) {
-	ctx := context.Background()
+// PostToBluesky posts a text message to Bluesky using the provided username and password.
+func PostToBluesky(text string, username, password string) (*atproto.RepoCreateRecord_Output, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(time.Second*3))
+	defer cancel()
 	xrpcClient := xrpc.Client{
 		Client: &http.Client{},
 		Host:   "https://bsky.social",
@@ -23,7 +26,7 @@ func PostToBluesky(text string, username, password string) {
 		Password:   password,
 	})
 	if err != nil {
-		log.Fatal("Failed to create session: " + err.Error())
+		return nil, errors.New("failed to create session: " + err.Error())
 	}
 
 	xrpcClient.Auth = &xrpc.AuthInfo{
@@ -37,14 +40,15 @@ func PostToBluesky(text string, username, password string) {
 		Text:      text,
 		CreatedAt: syntax.DatetimeNow().String(),
 	}
-	resp, err := atproto.RepoCreateRecord(context.Background(), &xrpcClient, &atproto.RepoCreateRecord_Input{
+	resp, err := atproto.RepoCreateRecord(ctx, &xrpcClient, &atproto.RepoCreateRecord_Input{
 		Repo:       xrpcClient.Auth.Did,
 		Collection: "app.bsky.feed.post",
 		Record:     &util.LexiconTypeDecoder{Val: &post},
 	})
 
 	if err != nil {
-		log.Fatal("Failed to post to Bluesky: " + err.Error())
+		return nil, errors.New("failed to post to Bluesky: " + err.Error())
 	}
-	log.Printf("Posted to Bluesky: %s\n", resp.Uri)
+
+	return resp, nil
 }

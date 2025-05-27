@@ -28,3 +28,6 @@ bin/
 
 # daysleft
 daysleft
+
+# .env
+.env

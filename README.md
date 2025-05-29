@@ -10,5 +10,5 @@ fly secrets set -a $YOUR_APP_NAME BSKY_USERNAME=
 fly secrets set -a $YOUR_APP_NAME BSKY_APP_PASSWORD=
 fly secrets set -a $YOUR_APP_NAME SENTRY_DSN=
 
-fly machines run . --rm --app $YOUR_APP_NAME --region $YOUR_REGION --schedule daily
+fly machines run . --app $YOUR_APP_NAME --region $YOUR_REGION --schedule daily
 ```
